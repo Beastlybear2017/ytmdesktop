@@ -18,6 +18,7 @@ export type StoreSchema = {
   playback: {
     continueWhereYouLeftOff: boolean;
     continueWhereYouLeftOffPaused: boolean;
+    autoClickSkipAd: boolean;
     enableSpeakerFill: boolean;
     progressInTaskbar: boolean;
     ratioVolume: boolean;
@@ -28,6 +29,7 @@ export type StoreSchema = {
     companionServerCORSWildcardEnabled: boolean;
     discordPresenceEnabled: boolean;
     lastFMEnabled: boolean;
+    enhancedMediaServiceEnabled: boolean;
   };
   shortcuts: {
     playPause: string;

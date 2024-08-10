@@ -47,6 +47,7 @@ const zoom = ref<number>(appearance.zoom);
 
 const continueWhereYouLeftOff = ref<boolean>(playback.continueWhereYouLeftOff);
 const continueWhereYouLeftOffPaused = ref<boolean>(playback.continueWhereYouLeftOffPaused);
+const autoClickSkipAd = ref<boolean>(playback.autoClickSkipAd);
 const enableSpeakerFill = ref<boolean>(playback.enableSpeakerFill);
 const progressInTaskbar = ref<boolean>(playback.progressInTaskbar);
 const ratioVolume = ref<boolean>(playback.ratioVolume);
@@ -58,6 +59,7 @@ const companionServerAuthTokens = ref<AuthToken[]>(
 const companionServerCORSWildcardEnabled = ref<boolean>(integrations.companionServerCORSWildcardEnabled);
 const discordPresenceEnabled = ref<boolean>(integrations.discordPresenceEnabled);
 const lastFMEnabled = ref<boolean>(integrations.lastFMEnabled);
+const enhancedMediaServiceEnabled = ref<boolean>(integrations.enhancedMediaServiceEnabled);
 
 const shortcutPlayPause = ref<string>(shortcuts.playPause);
 const shortcutNext = ref<string>(shortcuts.next);
@@ -84,6 +86,7 @@ store.onDidAnyChange(async newState => {
 
   continueWhereYouLeftOff.value = newState.playback.continueWhereYouLeftOff;
   continueWhereYouLeftOffPaused.value = newState.playback.continueWhereYouLeftOffPaused;
+  autoClickSkipAd.value = newState.playback.autoClickSkipAd;
   enableSpeakerFill.value = newState.playback.enableSpeakerFill;
   progressInTaskbar.value = newState.playback.progressInTaskbar;
   ratioVolume.value = newState.playback.ratioVolume;
@@ -97,6 +100,7 @@ store.onDidAnyChange(async newState => {
   lastFMEnabled.value = newState.integrations.lastFMEnabled;
   lastFMSessionKey.value = newState.lastfm.sessionKey;
   scrobblePercent.value = newState.lastfm.scrobblePercent;
+  enhancedMediaServiceEnabled.value = newState.integrations.enhancedMediaServiceEnabled;
 
   shortcutPlayPause.value = newState.shortcuts.playPause;
   shortcutNext.value = newState.shortcuts.next;
@@ -156,6 +160,7 @@ async function settingsChanged() {
 
   store.set("playback.continueWhereYouLeftOff", continueWhereYouLeftOff.value);
   store.set("playback.continueWhereYouLeftOffPaused", continueWhereYouLeftOffPaused.value);
+  store.set("playback.autoClickSkipAd", autoClickSkipAd.value);
   store.set("playback.progressInTaskbar", progressInTaskbar.value);
   store.set("playback.enableSpeakerFill", enableSpeakerFill.value);
   store.set("playback.ratioVolume", ratioVolume.value);
@@ -165,6 +170,7 @@ async function settingsChanged() {
   store.set("integrations.discordPresenceEnabled", discordPresenceEnabled.value);
   store.set("integrations.lastFMEnabled", lastFMEnabled.value);
   store.set("lastfm.scrobblePercent", scrobblePercent.value);
+  store.set("integrations.enhancedMediaServiceEnabled", enhancedMediaServiceEnabled.value);
 
   store.set("shortcuts.playPause", shortcutPlayPause.value);
   store.set("shortcuts.next", shortcutNext.value);
@@ -285,10 +291,7 @@ window.ytmd.handleUpdateDownloaded(() => {
           <YTMDSetting v-if="!isDarwin" v-model="hideToTrayOnClose" type="checkbox" name="Hide to tray on close" @change="settingsChanged" />
           <YTMDSetting v-model="showNotificationOnSongChange" type="checkbox" name="Show notification on song change" @change="settingsChanged" />
           <YTMDSetting v-model="startOnBoot" type="checkbox" name="Start on boot" @change="settingsChanged" />
-          <!--<div class="setting">
-            <p>Start minimized</p>
-            <input v-model="startMinimized" @change="settingsChanged" class="toggle" type="checkbox" />
-          </div>-->
+          <YTMDSetting v-model="startMinimized" type="checkbox" name="Start minimized to tray" @change="settingsChanged" />
           <YTMDSetting
             v-model="disableHardwareAcceleration"
             type="checkbox"
@@ -324,6 +327,7 @@ window.ytmd.handleUpdateDownloaded(() => {
             name="Pause on application launch"
             @change="settingsChanged"
           />
+          <YTMDSetting v-model="autoClickSkipAd" type="checkbox" name="Auto click skip ad" @change="settingsChanged" />
           <YTMDSetting v-model="progressInTaskbar" type="checkbox" name="Show track progress on taskbar" @change="settingsChanged" />
           <YTMDSetting v-model="enableSpeakerFill" type="checkbox" restart-required name="Enable speaker fill" @change="settingChangedRequiresRestart" />
           <YTMDSetting v-model="ratioVolume" type="checkbox" name="Ratio volume" @change="settingsChanged" />
@@ -425,6 +429,17 @@ window.ytmd.handleUpdateDownloaded(() => {
             max="95"
             step="5"
             @change="settingsChanged"
+          />
+          <YTMDSetting
+            v-model="enhancedMediaServiceEnabled"
+            type="checkbox"
+            restart-required
+            name="Enhanced media service"
+            description="An enhanced media service that can provide better media button controls"
+            :disabled="isDarwin"
+            disabled-message="This integration is not available on your platform"
+            beta
+            @change="settingChangedRequiresRestart"
           />
         </div>
 

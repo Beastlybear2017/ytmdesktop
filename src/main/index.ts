@@ -396,7 +396,7 @@ const store = new Conf<StoreSchema>({
       scrobblePercent: 50
     },
     developer: {
-      enableDevTools: true
+      enableDevTools: false
     }
   },
   beforeEachMigration: (store, context) => {
